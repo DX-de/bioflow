@@ -1,0 +1,39 @@
+{
+  "name": "bioflow",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "check:env": "node scripts/check-env.mjs",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.49.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.4.7",
+    "lucide-react": "^0.475.0",
+    "next": "^15.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.0.1",
+    "three": "^0.184.0",
+    "vercel": "^54.6.1"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4.0.9",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "^15.2.0",
+    "tailwindcss": "^4.0.9",
+    "typescript": "^5"
+  }
+}
