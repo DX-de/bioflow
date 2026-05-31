@@ -10,6 +10,7 @@ type ProfileBackgroundProps = {
   enabled: boolean;
   blur: number;
   opacity: number;
+  fallbackBase?: string;
 };
 
 export function ProfileBackground({
@@ -19,7 +20,9 @@ export function ProfileBackground({
   enabled,
   blur,
   opacity,
+  fallbackBase,
 }: ProfileBackgroundProps) {
+  const base = fallbackBase ?? theme.bgBase;
   const overlayOpacity = 1 - opacity;
 
   if (!enabled || !url || !type) {
@@ -31,7 +34,7 @@ export function ProfileBackground({
         />
         <div
           className="absolute inset-0"
-          style={{ backgroundColor: theme.bgBase, opacity: 0.85 }}
+          style={{ backgroundColor: base, opacity: 0.85 }}
         />
       </div>
     );
@@ -67,7 +70,7 @@ export function ProfileBackground({
       <div
         className="absolute inset-0"
         style={{
-          backgroundColor: theme.bgBase,
+          backgroundColor: base,
           opacity: Math.min(0.92, overlayOpacity + 0.15),
         }}
       />

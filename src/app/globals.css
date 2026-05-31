@@ -121,6 +121,56 @@ body {
   }
 }
 
+.bio-username-glow {
+  filter: drop-shadow(0 0 12px var(--bio-glow-color, #a855f7));
+}
+
+.bio-username-pulse {
+  animation: bio-pulse 2s ease-in-out infinite;
+}
+
+.bio-username-glitch {
+  animation: bio-glitch 2.5s steps(2) infinite;
+}
+
+.bio-username-sparkle {
+  animation: bio-sparkle 3s ease-in-out infinite;
+}
+
+@keyframes bio-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.75;
+  }
+}
+
+@keyframes bio-glitch {
+  0%,
+  90%,
+  100% {
+    transform: translate(0);
+  }
+  92% {
+    transform: translate(-2px, 1px);
+  }
+  94% {
+    transform: translate(2px, -1px);
+  }
+}
+
+@keyframes bio-sparkle {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.25);
+  }
+}
+
 @keyframes snow {
   0% {
     transform: translateY(-10px) translateX(0);

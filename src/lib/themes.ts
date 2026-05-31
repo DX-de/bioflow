@@ -18,7 +18,7 @@ export type ThemePreset = {
 export const BIOFLOW_THEMES: Record<BioThemeId, ThemePreset> = {
   classic: {
     id: "classic",
-    name: "Classic",
+    name: "Classic Free",
     description: "Élégant et sobre — inclus en Gratuit",
     accent: "#3b82f6",
     accentSecondary: "#60a5fa",
@@ -89,6 +89,36 @@ export const BIOFLOW_THEMES: Record<BioThemeId, ThemePreset> = {
     glassBorder: "rgba(239,68,68,0.3)",
     textPrimary: "#fef2f2",
     textMuted: "rgba(254,242,242,0.5)",
+    proOnly: true,
+  },
+  gold_premium: {
+    id: "gold_premium",
+    name: "Gold Premium",
+    description: "Or raffiné, luxe absolu",
+    accent: "#f59e0b",
+    accentSecondary: "#fcd34d",
+    bgBase: "#0a0804",
+    bgGradient:
+      "radial-gradient(ellipse 65% 45% at 50% 0%, rgba(245,158,11,0.22), transparent 55%), linear-gradient(180deg, #120c04 0%, #050403 100%)",
+    glassBg: "rgba(120,53,15,0.18)",
+    glassBorder: "rgba(245,158,11,0.35)",
+    textPrimary: "#fffbeb",
+    textMuted: "rgba(255,251,235,0.55)",
+    proOnly: true,
+  },
+  cyber_green: {
+    id: "cyber_green",
+    name: "Cyber Green",
+    description: "Matrix néon, vert électrique",
+    accent: "#22c55e",
+    accentSecondary: "#4ade80",
+    bgBase: "#030a05",
+    bgGradient:
+      "radial-gradient(ellipse 60% 40% at 50% 0%, rgba(34,197,94,0.3), transparent 55%), linear-gradient(180deg, #061208 0%, #020504 100%)",
+    glassBg: "rgba(20,83,45,0.15)",
+    glassBorder: "rgba(34,197,94,0.35)",
+    textPrimary: "#ecfdf5",
+    textMuted: "rgba(236,253,245,0.5)",
     proOnly: true,
   },
 };

@@ -7,13 +7,21 @@ export type BioThemeId =
   | "dark_luxury"
   | "neon_purple"
   | "ice_blue"
-  | "red_shadow";
+  | "red_shadow"
+  | "gold_premium"
+  | "cyber_green";
 
 export type EffectType = "none" | "particles" | "rain" | "snow" | "stars";
 
 export type CursorEffect = "none" | "trail";
 
 export type ProfileAnimation = "none" | "fade" | "scale" | "slide";
+
+export type UsernameEffect = "none" | "glow" | "pulse" | "glitch" | "sparkle";
+
+export type AvatarAnimation = "none" | "float" | "pulse" | "rotate-slow";
+
+export type PageTransition = "fade" | "zoom" | "slide" | "none";
 
 export type ProfileEffects = {
   particles: boolean;
@@ -41,20 +49,41 @@ export type User = {
   email: string;
   avatar: string | null;
   bio: string;
-  /** Preset theme id */
+  location: string;
   theme: string;
   plan: Plan;
   audio_url: string | null;
   audio_title: string | null;
   volume: number;
+  audio_loop: boolean;
   background_url: string | null;
   background_type: BackgroundType | null;
   background_blur: number;
   background_opacity: number;
+  cursor_url: string | null;
+  profile_opacity: number;
+  profile_blur: number;
+  border_radius: number;
+  card_width: number;
+  avatar_size: number;
   effects_enabled: ProfileEffects | null;
   effect_type: EffectType;
+  background_effect: EffectType;
   cursor_effect: CursorEffect;
   profile_animation: ProfileAnimation;
+  username_effect: UsernameEffect;
+  avatar_animation: AvatarAnimation;
+  page_transition: PageTransition;
+  accent_color: string | null;
+  text_color: string | null;
+  background_color: string | null;
+  icon_color: string | null;
+  primary_color: string | null;
+  secondary_color: string | null;
+  gradient_enabled: boolean;
+  glow_color: string | null;
+  button_color: string | null;
+  button_text_color: string | null;
   views: number;
   created_at?: string;
   updated_at?: string;
