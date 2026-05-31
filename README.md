@@ -18,7 +18,7 @@ Identité visuelle **BioFlow** — inspirée des bio-pages gaming/luxe modernes,
 | Module | Description |
 |--------|-------------|
 | Page publique | `/[username]` — écran « Clique pour entrer », profil glass, liens, vues |
-| Musique | URL audio HTTPS, titre, volume, lecteur discret (après clic uniquement) |
+| Musique | Upload fichier (.mp3, .wav…) ou URL HTTPS, lecteur après clic |
 | Fond | Image / GIF / vidéo MP4-WebM, flou et opacité réglables |
 | Effets | Particules, pluie, neige, étoiles, glow, traînée curseur, animations |
 | Thèmes | Classic (free), Dark Luxury, Neon Purple, Ice Blue, Red Shadow (pro) |
@@ -54,7 +54,8 @@ cp .env.example .env.local
    - `supabase/migrations/001_add_plan.sql`
    - `supabase/migrations/002_profile_media_effects.sql`
    - `supabase/migrations/003_premium_bio_platform.sql`
-4. Storage : bucket public `avatars`
+   - `supabase/migrations/004_profile_audio_storage.sql`
+4. Storage : buckets publics `avatars` et `profile-media` (musique)
 5. Auth → URL de redirection : `http://localhost:3000/auth/callback` et votre domaine Vercel
 
 ### Variables d’environnement

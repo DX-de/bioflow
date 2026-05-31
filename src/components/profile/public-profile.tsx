@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
@@ -94,20 +94,34 @@ export function PublicProfile({
   const [entered, setEntered] = useState(!needsGate);
   const audioRef = useRef<HTMLAudioElement>(null);
   const viewTracked = useRef(false);
+  const shouldPlayOnEnter = useRef(false);
 
   function handleEnter() {
+    shouldPlayOnEnter.current = showMusic;
     setEntered(true);
     if (!viewTracked.current && !previewMode) {
       viewTracked.current = true;
       trackView(user.id);
     }
-    const audio = audioRef.current;
-    if (audio && showMusic) {
-      audio.volume = volume;
-      audio.muted = false;
-      void audio.play().catch(() => {});
-    }
   }
+
+  useLayoutEffect(() => {
+    if (!entered || !shouldPlayOnEnter.current || !showMusic) return;
+    shouldPlayOnEnter.current = false;
+
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.volume = volume;
+    audio.muted = false;
+
+    const playPromise = audio.play();
+    if (playPromise) {
+      void playPromise.catch(() => {
+        /* navigateur a bloqué — l’utilisateur peut utiliser le bouton son */
+      });
+    }
+  }, [entered, showMusic, volume]);
 
   const useGlass = proEffects && effects.glass;
   const useGlow = proEffects && effects.glow;
@@ -155,29 +169,29 @@ export function PublicProfile({
             key="gate"
             username={user.username}
             accent={accent}
+            hasMusic={showMusic}
             onEnter={handleEnter}
           />
         )}
       </AnimatePresence>
 
-      {showMusic && entered && (
-        <ProfileAudioControls
-          audioRef={audioRef}
-          audioUrl={user.audio_url!}
-          audioTitle={user.audio_title}
-          accent={accent}
-          defaultVolume={volume}
-          visible
-        />
-      )}
-
-      {showMusic && !entered && (
+      {showMusic && (
         <audio
           ref={audioRef}
           src={user.audio_url!}
           loop
-          preload="none"
+          preload="metadata"
+          playsInline
           className="hidden"
+        />
+      )}
+
+      {showMusic && entered && (
+        <ProfileAudioControls
+          audioRef={audioRef}
+          audioTitle={user.audio_title}
+          accent={accent}
+          defaultVolume={volume}
         />
       )}
 

@@ -6,10 +6,11 @@ import { hexToRgba } from "@/lib/utils";
 type EntryGateProps = {
   username: string;
   accent: string;
+  hasMusic?: boolean;
   onEnter: () => void;
 };
 
-export function EntryGate({ username, accent, onEnter }: EntryGateProps) {
+export function EntryGate({ username, accent, hasMusic, onEnter }: EntryGateProps) {
   return (
     <motion.button
       type="button"
@@ -40,7 +41,9 @@ export function EntryGate({ username, accent, onEnter }: EntryGateProps) {
           Clique pour entrer
         </h2>
         <p className="text-white/40 text-sm mt-2">
-          La musique démarre après votre clic
+          {hasMusic
+            ? "La musique démarre après votre clic"
+            : "Appuyez pour découvrir le profil"}
         </p>
         <motion.span
           className="mt-8 inline-block h-12 w-12 rounded-full border-2 border-white/30"

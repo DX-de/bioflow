@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -42,7 +42,11 @@ import {
 import { validateHttpsMediaUrl } from "@/lib/validate-media-url";
 import { sanitizePublicProfile } from "@/lib/sanitize-profile";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, Crown, Save } from "lucide-react";
+import {
+  uploadProfileAudio,
+  MAX_PROFILE_AUDIO_BYTES,
+} from "@/lib/upload-profile-audio";
+import { ArrowLeft, Crown, Music, Save, Trash2, Upload } from "lucide-react";
 
 type CustomizeClientProps = {
   user: User;
@@ -85,8 +89,10 @@ export function CustomizeClient({
     parseProfileEffects(initialUser.effects_enabled)
   );
   const [saving, setSaving] = useState(false);
+  const [uploadingAudio, setUploadingAudio] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const audioInputRef = useRef<HTMLInputElement>(null);
 
   const previewUser = useMemo(
     () => sanitizePublicProfile({ ...draft, effects_enabled: effects }),
@@ -106,6 +112,35 @@ export function CustomizeClient({
   function toggleEffect(key: keyof ProfileEffects) {
     if (!pro) return;
     setEffects((e) => ({ ...e, [key]: !e[key] }));
+  }
+
+  async function handleAudioFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !pro) return;
+
+    setUploadingAudio(true);
+    setError(null);
+    setMessage(null);
+
+    try {
+      const url = await uploadProfileAudio(supabase, draft.id, file);
+      setField("audio_url", url);
+      if (!draft.audio_title?.trim()) {
+        const name = file.name.replace(/\.[^.]+$/, "");
+        setField("audio_title", name.slice(0, 80));
+      }
+      setMessage("Fichier audio importé — cliquez sur Enregistrer pour publier.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur lors de l’upload");
+    } finally {
+      setUploadingAudio(false);
+      if (audioInputRef.current) audioInputRef.current.value = "";
+    }
+  }
+
+  function clearAudio() {
+    setField("audio_url", null);
+    setMessage("Musique retirée — enregistrez pour appliquer.");
   }
 
   async function handleSave(e: React.FormEvent) {
@@ -257,6 +292,58 @@ export function CustomizeClient({
               </h2>
               <ProGate locked={!pro}>
                 <div className="space-y-4">
+                  <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4">
+                    <p className="text-sm font-medium text-slate-800 mb-2">
+                      Importer un fichier
+                    </p>
+                    <p className="text-xs text-slate-500 mb-3">
+                      MP3, WAV, OGG ou M4A — max{" "}
+                      {Math.round(MAX_PROFILE_AUDIO_BYTES / 1024 / 1024)} Mo
+                    </p>
+                    <input
+                      ref={audioInputRef}
+                      type="file"
+                      accept="audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/x-m4a,.mp3,.wav,.ogg,.m4a"
+                      className="hidden"
+                      disabled={!pro || uploadingAudio}
+                      onChange={handleAudioFileUpload}
+                    />
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        disabled={!pro || uploadingAudio}
+                        onClick={() => audioInputRef.current?.click()}
+                      >
+                        <Upload className="h-4 w-4" />
+                        {uploadingAudio ? "Import…" : "Choisir un fichier"}
+                      </Button>
+                      {draft.audio_url && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          disabled={!pro || uploadingAudio}
+                          onClick={clearAudio}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Retirer
+                        </Button>
+                      )}
+                    </div>
+                    {draft.audio_url && (
+                      <p className="mt-3 flex items-center gap-2 text-xs text-emerald-700">
+                        <Music className="h-3.5 w-3.5 shrink-0" />
+                        <span className="truncate">
+                          {draft.audio_title || "Piste prête à enregistrer"}
+                        </span>
+                      </p>
+                    )}
+                  </div>
+
+                  <p className="text-center text-xs text-slate-400">ou lien direct</p>
+
                   <Input
                     label="URL audio (HTTPS, .mp3/.wav/.ogg)"
                     value={draft.audio_url ?? ""}
