@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DashboardClient } from "@/components/dashboard/dashboard-client";
-import type { Link, User } from "@/types/database";
-import { normalizePlan } from "@/lib/plans";
+import type { Link } from "@/types/database";
+import { normalizeUserRow } from "@/lib/sanitize-profile";
+import { parseProfileEffects, clampVolume } from "@/lib/profile-effects";
 
 export const dynamic = "force-dynamic";
 
@@ -37,10 +38,9 @@ export default async function DashboardPage() {
     .eq("user_id", authUser.id)
     .order("position", { ascending: true });
 
-  const userWithPlan: User = {
-    ...(profile as User),
-    plan: normalizePlan((profile as User).plan),
-  };
+  const userWithPlan = normalizeUserRow(profile as Record<string, unknown>);
+  userWithPlan.effects_enabled = parseProfileEffects(userWithPlan.effects_enabled);
+  userWithPlan.volume = clampVolume(userWithPlan.volume);
 
   return (
     <DashboardClient

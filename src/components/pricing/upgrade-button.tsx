@@ -66,7 +66,7 @@ export function UpgradeButton({
         {label}
       </Button>
       {message && (
-        <p className="text-xs text-amber-400/90">{message}</p>
+        <p className="text-xs text-amber-700">{message}</p>
       )}
     </div>
   );

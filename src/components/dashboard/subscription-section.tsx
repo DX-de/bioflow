@@ -25,12 +25,12 @@ export function SubscriptionSection({ user }: SubscriptionSectionProps) {
             <Crown
               className={cn(
                 "h-5 w-5",
-                pro ? "text-violet-400" : "text-zinc-500"
+                pro ? "text-blue-600" : "text-slate-400"
               )}
             />
-            <h2 className="text-lg font-semibold">Mon abonnement</h2>
+            <h2 className="text-lg font-semibold text-slate-900">Mon abonnement</h2>
           </div>
-          <p className="text-sm text-zinc-400 mb-4">
+          <p className="text-sm text-slate-600 mb-4">
             Gérez votre plan et débloquez les fonctionnalités avancées.
           </p>
 
@@ -38,8 +38,8 @@ export function SubscriptionSection({ user }: SubscriptionSectionProps) {
             className={cn(
               "inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium",
               pro
-                ? "bg-violet-600/20 text-violet-300 ring-1 ring-violet-500/40"
-                : "bg-zinc-800 text-zinc-300 ring-1 ring-zinc-700"
+                ? "bg-blue-100 text-blue-700 ring-1 ring-blue-200"
+                : "bg-slate-100 text-slate-700 ring-1 ring-slate-200"
             )}
           >
             Plan {getPlanLabel(plan)} · {planDef.priceLabel}
@@ -55,7 +55,7 @@ export function SubscriptionSection({ user }: SubscriptionSectionProps) {
         {planDef.features.map((feature) => (
           <li
             key={feature}
-            className="flex items-center gap-2 text-sm text-zinc-400"
+            className="flex items-center gap-2 text-sm text-slate-600"
           >
             <Check className="h-4 w-4 text-emerald-500/80 shrink-0" />
             {feature}
@@ -64,9 +64,9 @@ export function SubscriptionSection({ user }: SubscriptionSectionProps) {
       </ul>
 
       {!pro && (
-        <p className="mt-6 text-sm text-zinc-500 border-t border-zinc-800/80 pt-4">
+        <p className="mt-6 text-sm text-slate-500 border-t border-slate-200 pt-4">
           Besoin de plus ?{" "}
-          <Link href="/pricing" className="text-violet-400 hover:underline">
+          <Link href="/pricing" className="text-blue-600 hover:underline font-medium">
             Comparez les plans
           </Link>
         </p>

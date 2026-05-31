@@ -29,9 +29,7 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
 
   const [username, setUsername] = useState(user.username);
   const [bio, setBio] = useState(user.bio || "");
-  const [theme, setTheme] = useState(
-    pro ? user.theme || DEFAULT_FREE_THEME : DEFAULT_FREE_THEME
-  );
+  const [theme, setTheme] = useState(user.theme || DEFAULT_FREE_THEME);
   const [avatar, setAvatar] = useState(user.avatar);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -140,13 +138,13 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
 
   return (
     <Card>
-      <h2 className="text-lg font-semibold mb-6">Mon profil</h2>
+      <h2 className="text-lg font-semibold mb-6 text-slate-900">Mon profil</h2>
 
       <div className="flex flex-col sm:flex-row items-center gap-6 mb-8">
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="relative group h-24 w-24 rounded-full overflow-hidden ring-2 ring-zinc-700 focus:outline-none focus:ring-violet-500"
+          className="relative group h-24 w-24 rounded-full overflow-hidden ring-2 ring-slate-200 focus:outline-none focus:ring-blue-500"
           style={{ boxShadow: `0 0 24px ${theme}40` }}
           disabled={uploading}
         >
@@ -178,7 +176,7 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
           onChange={handleAvatarUpload}
         />
         <div className="text-center sm:text-left flex-1">
-          <p className="text-sm text-zinc-400">Cliquez pour changer votre photo</p>
+          <p className="text-sm text-slate-600">Cliquez pour changer votre photo</p>
           <div className="mt-3 flex flex-wrap gap-2 justify-center sm:justify-start">
             <Button
               type="button"
@@ -220,11 +218,11 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
 
         <div>
           <div className="flex items-center justify-between mb-3">
-            <label className="text-sm font-medium text-zinc-300">
+            <label className="text-sm font-medium text-slate-700">
               Couleur principale
             </label>
             {!pro && (
-              <span className="text-xs text-zinc-500 flex items-center gap-1">
+              <span className="text-xs text-slate-500 flex items-center gap-1">
                 <Lock className="h-3 w-3" />
                 Thème simple (Gratuit)
               </span>
@@ -237,7 +235,7 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
                 type="button"
                 onClick={() => pro && setTheme(color)}
                 disabled={!pro && color !== DEFAULT_FREE_THEME}
-                className="h-10 w-10 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="h-10 w-10 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{
                   background: color,
                   outline: theme === color ? `2px solid white` : "none",
@@ -257,8 +255,8 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
             )}
           </div>
           {!pro && (
-            <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900/40 px-4 py-3">
-              <p className="text-xs text-zinc-400 flex-1">
+            <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
+              <p className="text-xs text-slate-600 flex-1">
                 Débloquez les thèmes premium et la couleur personnalisée avec le
                 plan Pro.
               </p>
@@ -268,12 +266,12 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
         </div>
 
         {error && (
-          <p className="text-sm text-red-400 bg-red-500/10 rounded-lg px-3 py-2">
+          <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
             {error}
           </p>
         )}
         {message && (
-          <p className="text-sm text-emerald-400 bg-emerald-500/10 rounded-lg px-3 py-2">
+          <p className="text-sm text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2">
             {message}
           </p>
         )}

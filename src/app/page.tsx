@@ -46,29 +46,29 @@ export default async function HomePage() {
     {
       icon: Zap,
       title: "Ultra rapide",
-      description: "Optimisé pour mobile, animations fluides, dark mode premium.",
+      description: "Optimisé pour mobile, animations fluides, interface claire.",
     },
   ];
 
   return (
-    <PageWith3DBackground overlay={0.5}>
+    <PageWith3DBackground overlay={0.75}>
       <Header user={user ? { email: user.email } : null} />
 
       <main>
         <section className="relative mx-auto max-w-6xl px-4 pt-16 pb-24 sm:pt-24 sm:pb-32 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1.5 text-sm text-violet-300 mb-8">
+          <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5 text-sm text-blue-700 mb-8">
             <Sparkles className="h-4 w-4" />
             La bio link nouvelle génération
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight max-w-4xl mx-auto">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight max-w-4xl mx-auto text-slate-900">
             Votre univers digital,{" "}
-            <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-sky-500 bg-clip-text text-transparent">
               une seule page
             </span>
           </h1>
 
-          <p className="mt-6 text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto">
+          <p className="mt-6 text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto">
             {APP_NAME} centralise vos réseaux sociaux dans une page élégante.
             Inscrivez-vous gratuitement et partagez votre lien en 2 minutes.
           </p>
@@ -97,22 +97,22 @@ export default async function HomePage() {
               </>
             )}
           </div>
-          <p className="mt-4 text-sm text-zinc-500">
-            <Link href="/pricing" className="text-violet-400 hover:underline">
+          <p className="mt-4 text-sm text-slate-500">
+            <Link href="/pricing" className="text-blue-600 hover:underline font-medium">
               Voir les plans Gratuit & Pro →
             </Link>
           </p>
 
-          <div className="mt-16 mx-auto max-w-sm glass rounded-3xl p-6 shadow-2xl animate-shimmer">
+          <div className="mt-16 mx-auto max-w-sm glass rounded-3xl p-6 animate-shimmer">
             <div className="flex flex-col items-center">
-              <div className="h-20 w-20 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 mb-4" />
-              <p className="font-bold text-lg">@votrepseudo</p>
-              <p className="text-sm text-zinc-400 mt-1">Créateur · Streamer · Artist</p>
+              <div className="h-20 w-20 rounded-full bg-gradient-to-br from-blue-600 to-sky-400 mb-4 shadow-lg shadow-blue-500/30" />
+              <p className="font-bold text-lg text-slate-900">@votrepseudo</p>
+              <p className="text-sm text-slate-500 mt-1">Créateur · Streamer · Artist</p>
               <div className="mt-6 w-full space-y-2">
                 {["Instagram", "TikTok", "YouTube"].map((label) => (
                   <div
                     key={label}
-                    className="rounded-xl bg-zinc-800/80 py-3 text-sm font-medium"
+                    className="rounded-xl bg-slate-50 border border-slate-200 py-3 text-sm font-medium text-slate-700"
                   >
                     {label}
                   </div>
@@ -122,21 +122,21 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-4 py-20 border-t border-zinc-800/50">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-12">
+        <section className="mx-auto max-w-6xl px-4 py-20 border-t border-slate-200/80">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-12 text-slate-900">
             Tout ce dont vous avez besoin
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map(({ icon: Icon, title, description }) => (
               <div
                 key={title}
-                className="glass rounded-2xl p-6 transition hover:border-violet-500/30"
+                className="glass rounded-2xl p-6 transition hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/5"
               >
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-600/20 text-violet-400 mb-4">
+                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-blue-600 mb-4">
                   <Icon className="h-6 w-6" />
                 </span>
-                <h3 className="font-semibold text-lg mb-2">{title}</h3>
-                <p className="text-sm text-zinc-400 leading-relaxed">
+                <h3 className="font-semibold text-lg mb-2 text-slate-900">{title}</h3>
+                <p className="text-sm text-slate-600 leading-relaxed">
                   {description}
                 </p>
               </div>
@@ -145,10 +145,10 @@ export default async function HomePage() {
         </section>
 
         <section className="mx-auto max-w-3xl px-4 py-20 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-4">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-slate-900">
             Prêt à lancer votre page ?
           </h2>
-          <p className="text-zinc-400 mb-8">
+          <p className="text-slate-600 mb-8">
             Rejoignez des créateurs qui centralisent leur présence en ligne.
           </p>
           <Link href={user ? "/dashboard" : "/signup"}>
@@ -159,7 +159,7 @@ export default async function HomePage() {
         </section>
       </main>
 
-      <footer className="border-t border-zinc-800/50 py-8 text-center text-sm text-zinc-600">
+      <footer className="border-t border-slate-200 py-8 text-center text-sm text-slate-500">
         © {new Date().getFullYear()} {APP_NAME}. Tous droits réservés.
       </footer>
     </PageWith3DBackground>

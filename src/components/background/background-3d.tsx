@@ -11,11 +11,11 @@ const Scene3DCanvas = dynamic(() => import("./scene-3d-canvas"), {
 
 type Background3DProps = {
   className?: string;
-  /** Intensité du voile sombre par-dessus la scène (0–1) */
+  /** Voile blanc par-dessus la scène 3D (0–1) */
   overlay?: number;
 };
 
-export function Background3D({ className, overlay = 0.55 }: Background3DProps) {
+export function Background3D({ className, overlay = 0.72 }: Background3DProps) {
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
@@ -33,12 +33,11 @@ export function Background3D({ className, overlay = 0.55 }: Background3DProps) {
   return (
     <div
       className={cn(
-        "pointer-events-none fixed inset-0 -z-10 overflow-hidden",
+        "pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-slate-50",
         className
       )}
       aria-hidden
     >
-      {/* Fallback CSS toujours présent */}
       <div className="absolute inset-0 gradient-mesh" />
 
       {enabled ? (
@@ -47,21 +46,18 @@ export function Background3D({ className, overlay = 0.55 }: Background3DProps) {
             <Scene3DCanvas />
           </div>
           <div
-            className="absolute inset-0 bg-zinc-950"
+            className="absolute inset-0 bg-white"
             style={{ opacity: overlay }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-950/20 to-zinc-950/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-slate-50/90" />
         </>
       ) : (
-        <div className="absolute inset-0 animate-gradient-shift opacity-60" />
+        <div className="absolute inset-0 animate-gradient-shift opacity-80" />
       )}
     </div>
   );
 }
 
-/**
- * Enveloppe de page avec fond 3D + contenu au premier plan.
- */
 export function PageWith3DBackground({
   children,
   className,

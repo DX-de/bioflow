@@ -10,11 +10,14 @@ export const metadata = {
 
 export default function SignupPage() {
   return (
-    <PageWith3DBackground overlay={0.65} className="flex flex-col">
+    <PageWith3DBackground overlay={0.78} className="flex flex-col">
       <div className="p-6">
-        <Link href="/" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition">
-          <Sparkles className="h-5 w-5 text-violet-400" />
-          <span className="font-bold">{APP_NAME}</span>
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition"
+        >
+          <Sparkles className="h-5 w-5 text-blue-600" />
+          <span className="font-bold text-slate-900">{APP_NAME}</span>
         </Link>
       </div>
       <main className="flex flex-1 items-center justify-center px-4 pb-12">

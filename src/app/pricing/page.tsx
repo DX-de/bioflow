@@ -36,19 +36,19 @@ export default async function PricingPage() {
   }
 
   return (
-    <PageWith3DBackground overlay={0.55}>
+    <PageWith3DBackground overlay={0.75}>
       <Header user={authUser ? { email: authUser.email } : null} />
 
       <main className="mx-auto max-w-6xl px-4 py-12 sm:py-20">
         <div className="text-center mb-14">
-          <span className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1.5 text-sm text-violet-300 mb-6">
+          <span className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5 text-sm text-blue-700 mb-6">
             <Sparkles className="h-4 w-4" />
             Tarifs simples et transparents
           </span>
-          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight max-w-2xl mx-auto">
+          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight max-w-2xl mx-auto text-slate-900">
             Choisissez le plan qui vous correspond
           </h1>
-          <p className="mt-4 text-zinc-400 text-lg max-w-xl mx-auto">
+          <p className="mt-4 text-slate-600 text-lg max-w-xl mx-auto">
             Commencez gratuitement, passez en Pro quand vous voulez débloquer
             tout le potentiel de votre page.
           </p>
@@ -59,10 +59,10 @@ export default async function PricingPage() {
           currentPlan={currentPlan}
         />
 
-        <p className="mt-12 text-center text-sm text-zinc-500 max-w-lg mx-auto">
+        <p className="mt-12 text-center text-sm text-slate-500 max-w-lg mx-auto">
           Le paiement Stripe sera bientôt disponible. En attendant, explorez
           les fonctionnalités Pro sur la page tarifs.{" "}
-          <Link href="/dashboard" className="text-violet-400 hover:underline">
+          <Link href="/dashboard" className="text-blue-600 hover:underline font-medium">
             Retour au dashboard
           </Link>
         </p>

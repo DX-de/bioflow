@@ -1,5 +1,14 @@
 export type Plan = "free" | "pro";
 
+export type BackgroundType = "image" | "gif" | "video";
+
+export type ProfileEffects = {
+  particles: boolean;
+  glass: boolean;
+  glow: boolean;
+  entrance: boolean;
+};
+
 export type User = {
   id: string;
   username: string;
@@ -8,6 +17,11 @@ export type User = {
   bio: string;
   theme: string;
   plan: Plan;
+  audio_url: string | null;
+  background_url: string | null;
+  background_type: BackgroundType | null;
+  effects_enabled: ProfileEffects | null;
+  volume: number;
   created_at?: string;
   updated_at?: string;
 };

@@ -122,28 +122,28 @@ export function LinksManager({ user, links, onUpdate }: LinksManagerProps) {
   return (
     <Card>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
-        <h2 className="text-lg font-semibold">Liens sociaux</h2>
+        <h2 className="text-lg font-semibold text-slate-900">Liens sociaux</h2>
         {!pro && (
-          <span className="text-xs font-medium text-zinc-400 bg-zinc-800/80 rounded-full px-3 py-1 w-fit">
+          <span className="text-xs font-medium text-slate-600 bg-slate-100 rounded-full px-3 py-1 w-fit">
             {items.length}/{FREE_LINK_LIMIT} liens
           </span>
         )}
       </div>
-      <p className="text-sm text-zinc-400 mb-6">
+      <p className="text-sm text-slate-600 mb-6">
         {pro
           ? "Ajoutez autant de liens que vous voulez."
           : `Plan Gratuit : maximum ${FREE_LINK_LIMIT} liens.`}
       </p>
 
       {atLimit && (
-        <div className="mb-6 rounded-xl border border-violet-500/30 bg-violet-600/10 px-4 py-4 flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="mb-6 rounded-xl border border-blue-200 bg-blue-50 px-4 py-4 flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="flex items-start gap-3 flex-1">
-            <Zap className="h-5 w-5 text-violet-400 shrink-0 mt-0.5" />
+            <Zap className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-violet-200">
+              <p className="text-sm font-medium text-blue-800">
                 Passe en Pro pour ajouter des liens illimités.
               </p>
-              <p className="text-xs text-zinc-400 mt-1">
+              <p className="text-xs text-slate-600 mt-1">
                 Vous avez atteint la limite de {FREE_LINK_LIMIT} liens du plan
                 Gratuit.
               </p>
@@ -158,7 +158,7 @@ export function LinksManager({ user, links, onUpdate }: LinksManagerProps) {
         className={`space-y-4 mb-8 ${atLimit ? "opacity-50 pointer-events-none" : ""}`}
       >
         <div>
-          <label className="block text-sm font-medium text-zinc-300 mb-2">
+          <label className="block text-sm font-medium text-slate-700 mb-2">
             Réseau
           </label>
           <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
@@ -173,8 +173,8 @@ export function LinksManager({ user, links, onUpdate }: LinksManagerProps) {
                 disabled={atLimit}
                 className={`flex flex-col items-center gap-1 rounded-xl p-2 text-xs transition-all ${
                   selectedNetwork === n.id
-                    ? "bg-violet-600/20 ring-2 ring-violet-500 text-white"
-                    : "bg-zinc-800/50 text-zinc-400 hover:bg-zinc-800"
+                    ? "bg-blue-100 ring-2 ring-blue-500 text-blue-700"
+                    : "bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200"
                 }`}
                 title={n.label}
               >
@@ -205,13 +205,13 @@ export function LinksManager({ user, links, onUpdate }: LinksManagerProps) {
         />
 
         {error && (
-          <p className="text-sm text-red-400 bg-red-500/10 rounded-lg px-3 py-2">
+          <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
             {error}
           </p>
         )}
 
         {!atLimit && remaining !== null && (
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-slate-500">
             Il vous reste {remaining} lien{remaining > 1 ? "s" : ""} sur{" "}
             {FREE_LINK_LIMIT}.
           </p>
@@ -231,7 +231,7 @@ export function LinksManager({ user, links, onUpdate }: LinksManagerProps) {
       <ul className="space-y-2">
         <AnimatePresence mode="popLayout">
           {items.length === 0 ? (
-            <li className="text-center py-8 text-sm text-zinc-500 border border-dashed border-zinc-700 rounded-xl">
+            <li className="text-center py-8 text-sm text-slate-500 border border-dashed border-slate-300 rounded-xl">
               Aucun lien ajouté
             </li>
           ) : (
@@ -242,18 +242,18 @@ export function LinksManager({ user, links, onUpdate }: LinksManagerProps) {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 10 }}
-                className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900/50 px-4 py-3"
+                className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"
               >
-                <GripVertical className="h-4 w-4 text-zinc-600 shrink-0" />
+                <GripVertical className="h-4 w-4 text-slate-400 shrink-0" />
                 <span
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-zinc-800"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white border border-slate-200"
                   style={{ color: getNetworkColor(link.icon) }}
                 >
                   <SocialIcon network={link.icon} className="h-4 w-4" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="font-medium text-sm truncate">{link.title}</p>
-                  <p className="text-xs text-zinc-500 truncate">{link.url}</p>
+                  <p className="font-medium text-sm truncate text-slate-900">{link.title}</p>
+                  <p className="text-xs text-slate-500 truncate">{link.url}</p>
                 </div>
                 <div className="flex gap-1 shrink-0">
                   <Button
@@ -293,8 +293,8 @@ export function LinksManager({ user, links, onUpdate }: LinksManagerProps) {
       </ul>
 
       {!pro && !atLimit && (
-        <p className="mt-4 text-center text-xs text-zinc-500">
-          <Link href="/pricing" className="text-violet-400 hover:underline">
+        <p className="mt-4 text-center text-xs text-slate-500">
+          <Link href="/pricing" className="text-blue-600 hover:underline font-medium">
             Voir le plan Pro
           </Link>
         </p>

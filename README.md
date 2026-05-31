@@ -156,6 +156,13 @@ npm run build
 | bio | text | Biographie |
 | theme | text | Couleur hex (#8b5cf6) |
 | plan | text | `free` ou `pro` (défaut: `free`) |
+| audio_url | text | URL HTTPS audio (Pro) |
+| background_url | text | Fond image/GIF/vidéo (Pro) |
+| background_type | text | `image` \| `gif` \| `video` |
+| effects_enabled | jsonb | Particules, glass, glow, entrance |
+| volume | numeric | Volume musique 0–1 (défaut 0.7) |
+
+Exécutez aussi `supabase/migrations/002_profile_media_effects.sql` sur les projets existants.
 
 ### Table `links`
 

@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { PublicProfile } from "@/components/profile/public-profile";
 import type { Metadata } from "next";
 import type { Link, User } from "@/types/database";
+import { sanitizePublicProfile, normalizeUserRow } from "@/lib/sanitize-profile";
+import { parseProfileEffects, clampVolume } from "@/lib/profile-effects";
 
 type PageProps = {
   params: Promise<{ username: string }>;
@@ -73,7 +75,14 @@ export default async function PublicProfilePage({ params }: PageProps) {
     .eq("user_id", user.id)
     .order("position", { ascending: true });
 
+  const profile = normalizeUserRow(user as Record<string, unknown>);
+  profile.effects_enabled = parseProfileEffects(profile.effects_enabled);
+  profile.volume = clampVolume(profile.volume);
+
   return (
-    <PublicProfile user={user as User} links={(links ?? []) as Link[]} />
+    <PublicProfile
+      user={sanitizePublicProfile(profile)}
+      links={(links ?? []) as Link[]}
+    />
   );
 }

@@ -11,8 +11,13 @@ create table if not exists public.users (
   email text not null,
   avatar text,
   bio text default '',
-  theme text default '#8b5cf6',
+  theme text default '#2563eb',
   plan text not null default 'free' check (plan in ('free', 'pro')),
+  audio_url text,
+  background_url text,
+  background_type text check (background_type is null or background_type in ('image', 'gif', 'video')),
+  effects_enabled jsonb default '{"particles":false,"glass":true,"glow":true,"entrance":true}'::jsonb,
+  volume numeric default 0.7 check (volume is null or (volume >= 0 and volume <= 1)),
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -76,7 +81,7 @@ begin
     new.email,
     coalesce(new.raw_user_meta_data->>'avatar_url', null),
     '',
-    '#8b5cf6',
+    '#2563eb',
     'free'
   );
 

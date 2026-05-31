@@ -1,8 +1,8 @@
-import type { Plan } from "@/types/database";
+import type { BackgroundType, Plan } from "@/types/database";
 
 export const FREE_LINK_LIMIT = 5;
 export const PRO_PRICE_MONTHLY = 4.99;
-export const DEFAULT_FREE_THEME = "#8b5cf6";
+export const DEFAULT_FREE_THEME = "#2563eb";
 
 export type PlanId = Plan;
 
@@ -29,6 +29,7 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
       "1 thème simple",
       "Page publique personnalisée",
       "Photo et bio",
+      "Pas de musique ni fond vidéo",
     ],
     cta: "Commencer gratuitement",
   },
@@ -37,12 +38,13 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
     name: "Pro",
     price: PRO_PRICE_MONTHLY,
     priceLabel: "4,99€/mois",
-    description: "Pour les créateurs qui veulent aller plus loin.",
+    description: "Style bio-page premium : musique, fonds et effets.",
     features: [
       "Liens illimités",
-      "Statistiques détaillées",
-      "QR Code automatique",
-      "Domaine personnalisé",
+      "Musique de profil",
+      "Fond image / GIF / vidéo",
+      "Effets visuels (particules, glow, glass)",
+      "Statistiques · QR Code · Domaine perso",
       "Thèmes premium",
     ],
     highlighted: true,
@@ -70,4 +72,28 @@ export function getPlanLabel(plan: Plan): string {
 
 export function normalizePlan(plan: string | null | undefined): Plan {
   return plan === "pro" ? "pro" : "free";
+}
+
+export function canUseProfileMusic(plan: Plan): boolean {
+  return isPro(plan);
+}
+
+export function canUseCustomBackground(plan: Plan): boolean {
+  return isPro(plan);
+}
+
+export function canUseBackgroundType(
+  plan: Plan,
+  type: BackgroundType
+): boolean {
+  if (!isPro(plan)) return false;
+  return type === "image" || type === "gif" || type === "video";
+}
+
+export function canUseVideoBackground(plan: Plan): boolean {
+  return isPro(plan);
+}
+
+export function canUseVisualEffects(plan: Plan): boolean {
+  return isPro(plan);
 }

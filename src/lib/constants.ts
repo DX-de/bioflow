@@ -62,16 +62,16 @@ export const FREE_THEME_PRESETS = [DEFAULT_FREE_THEME];
 
 /** Palettes premium (plan Pro) */
 export const PRO_THEME_PRESETS = [
-  "#8b5cf6",
-  "#ec4899",
-  "#06b6d4",
-  "#10b981",
-  "#f59e0b",
-  "#ef4444",
+  "#2563eb",
   "#3b82f6",
-  "#a855f7",
-  "#f97316",
-  "#14b8a6",
+  "#0ea5e9",
+  "#1d4ed8",
+  "#60a5fa",
+  "#0284c7",
+  "#0369a1",
+  "#38bdf8",
+  "#1e40af",
+  "#0c4a6e",
 ];
 
 /** @deprecated Utilisez FREE_THEME_PRESETS ou PRO_THEME_PRESETS */

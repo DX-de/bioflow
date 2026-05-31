@@ -91,10 +91,10 @@ export function AuthForm({ mode }: AuthFormProps) {
     >
       <Card>
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-2xl font-bold text-slate-900">
             {isSignup ? "Créer un compte" : "Bon retour"}
           </h1>
-          <p className="mt-2 text-sm text-zinc-400">
+          <p className="mt-2 text-sm text-slate-600">
             {isSignup
               ? "Rejoignez BioFlow et partagez vos liens"
               : "Connectez-vous à votre espace"}
@@ -102,7 +102,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         </div>
 
         {!configured && (
-          <div className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+          <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
             {SUPABASE_SETUP_MESSAGE}
           </div>
         )}
@@ -139,7 +139,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           />
 
           {error && (
-            <p className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
+            <p className="rounded-lg bg-red-50 border border-red-100 px-3 py-2 text-sm text-red-600">
               {error}
             </p>
           )}
@@ -149,18 +149,18 @@ export function AuthForm({ mode }: AuthFormProps) {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-zinc-500">
+        <p className="mt-6 text-center text-sm text-slate-500">
           {isSignup ? (
             <>
               Déjà un compte ?{" "}
-              <Link href="/login" className="text-violet-400 hover:underline">
+              <Link href="/login" className="text-blue-600 hover:underline font-medium">
                 Se connecter
               </Link>
             </>
           ) : (
             <>
               Pas encore de compte ?{" "}
-              <Link href="/signup" className="text-violet-400 hover:underline">
+              <Link href="/signup" className="text-blue-600 hover:underline font-medium">
                 S&apos;inscrire
               </Link>
             </>
