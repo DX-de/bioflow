@@ -6,47 +6,101 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Link as BioLink, User } from "@/types/database";
 import { SocialIcon, getNetworkColor, getNetworkLabel } from "@/components/social-icons";
-import { hexToRgba, normalizeUrl } from "@/lib/utils";
-import { parseProfileEffects, clampVolume } from "@/lib/profile-effects";
+import { normalizeUrl } from "@/lib/utils";
+import { parseProfileEffects } from "@/lib/profile-effects";
 import {
   canUseCustomBackground,
   canUseProfileMusic,
   canUseVisualEffects,
   isPro,
 } from "@/lib/plans";
+import { getTheme } from "@/lib/themes";
 import { ProfileBackground } from "@/components/profile/profile-background";
-import { ProfileParticles } from "@/components/profile/profile-particles";
+import {
+  ProfileCursorTrail,
+  ProfileEffectsLayer,
+} from "@/components/profile/profile-effects-layer";
 import { EntryGate } from "@/components/profile/entry-gate";
 import { ProfileAudioControls } from "@/components/profile/profile-audio-controls";
-import { ExternalLink, Sparkles } from "lucide-react";
+import { ExternalLink, Eye, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type PublicProfileProps = {
   user: User;
   links: BioLink[];
+  previewMode?: boolean;
 };
 
-export function PublicProfile({ user, links }: PublicProfileProps) {
-  const theme = user.theme || "#2563eb";
+function trackView(userId: string) {
+  void fetch("/api/track/view", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId }),
+  });
+}
+
+function trackClick(linkId: string) {
+  void fetch("/api/track/click", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ linkId }),
+  });
+}
+
+function animationVariants(type: string) {
+  switch (type) {
+    case "scale":
+      return {
+        initial: { opacity: 0, scale: 0.88 },
+        animate: { opacity: 1, scale: 1 },
+      };
+    case "slide":
+      return {
+        initial: { opacity: 0, x: -24 },
+        animate: { opacity: 1, x: 0 },
+      };
+    case "none":
+      return { initial: false, animate: { opacity: 1 } };
+    default:
+      return {
+        initial: { opacity: 0, y: 20 },
+        animate: { opacity: 1, y: 0 },
+      };
+  }
+}
+
+export function PublicProfile({
+  user,
+  links,
+  previewMode = false,
+}: PublicProfileProps) {
+  const themePreset = getTheme(user.theme);
   const plan = user.plan ?? "free";
   const pro = isPro(plan);
   const effects = parseProfileEffects(user.effects_enabled);
   const proEffects = pro && canUseVisualEffects(plan);
-  const showMusic = pro && canUseProfileMusic(plan) && Boolean(user.audio_url?.trim());
+  const showMusic =
+    pro && canUseProfileMusic(plan) && Boolean(user.audio_url?.trim());
   const showBg =
     pro &&
     canUseCustomBackground(plan) &&
     Boolean(user.background_url?.trim() && user.background_type);
 
-  const volume = clampVolume(user.volume);
+  const volume = user.volume ?? 0.7;
   const initials = user.username.slice(0, 2).toUpperCase();
+  const accent = themePreset.accent;
 
-  const needsGate = showMusic;
+  const needsGate = !previewMode;
   const [entered, setEntered] = useState(!needsGate);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const viewTracked = useRef(false);
 
   function handleEnter() {
     setEntered(true);
+    if (!viewTracked.current && !previewMode) {
+      viewTracked.current = true;
+      trackView(user.id);
+    }
     const audio = audioRef.current;
     if (audio && showMusic) {
       audio.volume = volume;
@@ -57,19 +111,42 @@ export function PublicProfile({ user, links }: PublicProfileProps) {
 
   const useGlass = proEffects && effects.glass;
   const useGlow = proEffects && effects.glow;
-  const useEntrance = proEffects && effects.entrance;
+  const anim = user.profile_animation ?? "fade";
+  const cardAnim = animationVariants(anim);
+  const avatarAnim =
+    anim === "scale"
+      ? { animate: { scale: [1, 1.04, 1] }, transition: { duration: 3, repeat: Infinity } }
+      : undefined;
+
+  const effectType =
+    proEffects && user.effect_type !== "none" ? user.effect_type : "none";
+  const cursorTrail =
+    proEffects && user.cursor_effect === "trail";
 
   return (
-    <div className="relative min-h-dvh w-full text-white overflow-x-hidden">
+    <div
+      className="relative min-h-dvh w-full overflow-x-hidden"
+      style={{ color: themePreset.textPrimary }}
+    >
       <ProfileBackground
         url={showBg ? user.background_url : null}
         type={showBg ? user.background_type : null}
-        theme={theme}
+        theme={themePreset}
         enabled={showBg}
+        blur={user.background_blur ?? 0}
+        opacity={user.background_opacity ?? 0.55}
       />
 
-      {proEffects && effects.particles && (
-        <ProfileParticles theme={theme} enabled />
+      {entered && (
+        <ProfileEffectsLayer
+          effectType={effectType}
+          accent={accent}
+          enabled={proEffects}
+        />
+      )}
+
+      {entered && cursorTrail && (
+        <ProfileCursorTrail accent={accent} enabled />
       )}
 
       <AnimatePresence>
@@ -77,7 +154,7 @@ export function PublicProfile({ user, links }: PublicProfileProps) {
           <EntryGate
             key="gate"
             username={user.username}
-            theme={theme}
+            accent={accent}
             onEnter={handleEnter}
           />
         )}
@@ -87,13 +164,21 @@ export function PublicProfile({ user, links }: PublicProfileProps) {
         <ProfileAudioControls
           audioRef={audioRef}
           audioUrl={user.audio_url!}
+          audioTitle={user.audio_title}
+          accent={accent}
           defaultVolume={volume}
           visible
         />
       )}
 
       {showMusic && !entered && (
-        <audio ref={audioRef} src={user.audio_url!} loop preload="none" className="hidden" />
+        <audio
+          ref={audioRef}
+          src={user.audio_url!}
+          loop
+          preload="none"
+          className="hidden"
+        />
       )}
 
       <main
@@ -103,27 +188,37 @@ export function PublicProfile({ user, links }: PublicProfileProps) {
         )}
       >
         <motion.div
-          initial={useEntrance ? { opacity: 0, y: 24, scale: 0.96 } : false}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
+          {...cardAnim}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           className={cn(
             "w-full flex flex-col items-center text-center",
             useGlass &&
-              "rounded-3xl border border-white/10 bg-white/5 px-6 py-8 backdrop-blur-xl shadow-2xl"
+              "rounded-3xl px-6 py-8 backdrop-blur-xl shadow-2xl border"
           )}
+          style={
+            useGlass
+              ? {
+                  background: themePreset.glassBg,
+                  borderColor: themePreset.glassBorder,
+                  boxShadow: useGlow
+                    ? `0 0 60px ${accent}33, 0 25px 50px -12px rgba(0,0,0,0.5)`
+                    : undefined,
+                }
+              : undefined
+          }
         >
-          <div
+          <motion.div
             className={cn(
               "relative mb-5 h-28 w-28 overflow-hidden rounded-full sm:h-32 sm:w-32",
-              "ring-2 ring-white/20 ring-offset-4 ring-offset-transparent"
+              "ring-2 ring-offset-4 ring-offset-transparent"
             )}
-            style={
-              useGlow
-                ? {
-                    boxShadow: `0 0 48px ${hexToRgba(theme, 0.55)}, 0 0 96px ${hexToRgba(theme, 0.25)}`,
-                  }
-                : undefined
-            }
+            style={{
+              boxShadow: useGlow
+                ? `0 0 48px ${accent}88, 0 0 96px ${accent}33, 0 0 0 2px ${accent}55`
+                : `0 0 0 2px ${accent}44`,
+            }}
+            animate={avatarAnim?.animate}
+            transition={avatarAnim?.transition}
           >
             {user.avatar ? (
               <Image
@@ -136,21 +231,23 @@ export function PublicProfile({ user, links }: PublicProfileProps) {
               />
             ) : (
               <div
-                className="flex h-full w-full items-center justify-center text-3xl font-bold"
+                className="flex h-full w-full items-center justify-center text-3xl font-bold text-white"
                 style={{
-                  background: `linear-gradient(135deg, ${theme}, ${hexToRgba(theme, 0.5)})`,
+                  background: `linear-gradient(135deg, ${accent}, ${themePreset.accentSecondary})`,
                 }}
               >
                 {initials}
               </div>
             )}
-          </div>
+          </motion.div>
 
           <div className="flex flex-wrap items-center justify-center gap-2 mb-2">
             <h1
-              className="text-2xl sm:text-3xl font-bold tracking-tight bg-clip-text text-transparent"
+              className="text-2xl sm:text-3xl font-bold tracking-tight"
               style={{
-                backgroundImage: `linear-gradient(135deg, #fff 0%, ${theme} 100%)`,
+                backgroundImage: `linear-gradient(135deg, ${themePreset.textPrimary}, ${accent})`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
               }}
             >
               @{user.username}
@@ -159,9 +256,9 @@ export function PublicProfile({ user, links }: PublicProfileProps) {
               <span
                 className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider"
                 style={{
-                  background: hexToRgba(theme, 0.2),
-                  color: theme,
-                  border: `1px solid ${hexToRgba(theme, 0.4)}`,
+                  background: `${accent}33`,
+                  color: accent,
+                  border: `1px solid ${accent}66`,
                 }}
               >
                 <Sparkles className="h-3 w-3" />
@@ -171,23 +268,39 @@ export function PublicProfile({ user, links }: PublicProfileProps) {
           </div>
 
           {user.bio && (
-            <p className="max-w-sm text-sm leading-relaxed text-white/70 sm:text-base">
+            <p
+              className="max-w-sm text-sm leading-relaxed sm:text-base"
+              style={{ color: themePreset.textMuted }}
+            >
               {user.bio}
             </p>
           )}
+
+          <div
+            className="mt-4 flex items-center gap-1.5 text-xs"
+            style={{ color: themePreset.textMuted }}
+          >
+            <Eye className="h-3.5 w-3.5" />
+            <span>
+              {(user.views ?? 0).toLocaleString("fr-FR")} vues
+            </span>
+          </div>
         </motion.div>
 
         <motion.ul
           className="mt-8 flex w-full flex-col gap-3"
-          initial={useEntrance ? "hidden" : false}
+          initial={effects.entrance && entered ? "hidden" : false}
           animate="visible"
           variants={{
             hidden: {},
-            visible: { transition: { staggerChildren: 0.07, delayChildren: 0.2 } },
+            visible: { transition: { staggerChildren: 0.07, delayChildren: 0.15 } },
           }}
         >
           {links.length === 0 ? (
-            <li className="rounded-2xl border border-dashed border-white/20 py-12 text-center text-sm text-white/40">
+            <li
+              className="rounded-2xl border border-dashed py-12 text-center text-sm"
+              style={{ borderColor: themePreset.glassBorder, color: themePreset.textMuted }}
+            >
               Aucun lien pour le moment
             </li>
           ) : (
@@ -207,35 +320,44 @@ export function PublicProfile({ user, links }: PublicProfileProps) {
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => !previewMode && trackClick(link.id)}
                     className={cn(
-                      "bio-link-card group flex items-center gap-4 rounded-2xl px-5 py-4 transition-all duration-200",
-                      useGlass
-                        ? "border border-white/10 bg-white/5 backdrop-blur-md hover:bg-white/10"
-                        : "border border-white/15 bg-black/40 hover:bg-black/55"
+                      "group flex items-center gap-4 rounded-2xl px-5 py-4 transition-all duration-200",
+                      "border hover:scale-[1.02] active:scale-[0.99]",
+                      useGlass ? "backdrop-blur-md" : ""
                     )}
                     style={{
-                      ["--link-accent" as string]: color,
+                      background: useGlass ? themePreset.glassBg : "rgba(0,0,0,0.45)",
+                      borderColor: themePreset.glassBorder,
+                      boxShadow: useGlow ? `0 0 24px ${color}22` : undefined,
                     }}
                   >
                     <span
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-transform group-hover:scale-105"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-transform group-hover:scale-110"
                       style={{
-                        background: hexToRgba(color, 0.2),
+                        background: `${color}33`,
                         color,
-                        boxShadow: useGlow ? `0 0 20px ${hexToRgba(color, 0.35)}` : undefined,
                       }}
                     >
                       <SocialIcon network={link.icon} className="h-5 w-5" />
                     </span>
                     <span className="min-w-0 flex-1 text-left">
-                      <span className="block font-semibold text-white group-hover:text-white transition-colors">
+                      <span className="block font-semibold transition-colors">
                         {link.title || getNetworkLabel(link.icon)}
                       </span>
-                      <span className="block truncate text-xs text-white/45">
+                      <span
+                        className="block truncate text-xs"
+                        style={{ color: themePreset.textMuted }}
+                      >
                         {link.url.replace(/^https?:\/\//, "")}
                       </span>
+                      {(link.clicks ?? 0) > 0 && (
+                        <span className="text-[10px] opacity-60">
+                          {link.clicks} clic{link.clicks !== 1 ? "s" : ""}
+                        </span>
+                      )}
                     </span>
-                    <ExternalLink className="h-4 w-4 shrink-0 text-white/30 group-hover:text-white/70 transition-colors" />
+                    <ExternalLink className="h-4 w-4 shrink-0 opacity-40 group-hover:opacity-80 transition-opacity" />
                   </a>
                 </motion.li>
               );
@@ -243,14 +365,17 @@ export function PublicProfile({ user, links }: PublicProfileProps) {
           )}
         </motion.ul>
 
-        <footer className="mt-auto pt-12 pb-6">
-          <Link
-            href="/"
-            className="text-xs text-white/35 hover:text-white/60 transition-colors"
-          >
-            Créé avec BioFlow
-          </Link>
-        </footer>
+        {!previewMode && (
+          <footer className="mt-auto pt-12 pb-6">
+            <Link
+              href="/"
+              className="text-xs transition-colors hover:opacity-80"
+              style={{ color: themePreset.textMuted }}
+            >
+              Créé avec BioFlow
+            </Link>
+          </footer>
+        )}
       </main>
     </div>
   );

@@ -1,13 +1,15 @@
 "use client";
 
 import type { BackgroundType } from "@/types/database";
-import { hexToRgba } from "@/lib/utils";
+import type { ThemePreset } from "@/lib/themes";
 
 type ProfileBackgroundProps = {
   url: string | null;
   type: BackgroundType | null;
-  theme: string;
+  theme: ThemePreset;
   enabled: boolean;
+  blur: number;
+  opacity: number;
 };
 
 export function ProfileBackground({
@@ -15,28 +17,30 @@ export function ProfileBackground({
   type,
   theme,
   enabled,
+  blur,
+  opacity,
 }: ProfileBackgroundProps) {
-  const baseGradient = (
-    <div
-      className="absolute inset-0"
-      style={{
-        background: `
-          radial-gradient(ellipse 80% 60% at 50% -10%, ${hexToRgba(theme, 0.35)} 0%, transparent 55%),
-          radial-gradient(ellipse 50% 40% at 100% 80%, ${hexToRgba(theme, 0.15)} 0%, transparent 50%),
-          linear-gradient(180deg, #0c0c12 0%, #050508 50%, #0a0a10 100%)
-        `,
-      }}
-    />
-  );
+  const overlayOpacity = 1 - opacity;
 
   if (!enabled || !url || !type) {
     return (
       <div className="fixed inset-0 -z-20 overflow-hidden">
-        {baseGradient}
-        <div className="absolute inset-0 bg-black/40" />
+        <div
+          className="absolute inset-0"
+          style={{ background: theme.bgGradient }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{ backgroundColor: theme.bgBase, opacity: 0.85 }}
+        />
       </div>
     );
   }
+
+  const mediaStyle = {
+    filter: blur > 0 ? `blur(${blur}px)` : undefined,
+    transform: blur > 0 ? "scale(1.05)" : undefined,
+  };
 
   return (
     <div className="fixed inset-0 -z-20 overflow-hidden">
@@ -44,6 +48,7 @@ export function ProfileBackground({
         <video
           src={url}
           className="absolute inset-0 h-full w-full object-cover"
+          style={mediaStyle}
           autoPlay
           loop
           muted
@@ -56,13 +61,20 @@ export function ProfileBackground({
           src={url}
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
+          style={mediaStyle}
         />
       )}
-      <div className="absolute inset-0 bg-black/55" />
       <div
         className="absolute inset-0"
         style={{
-          background: `radial-gradient(ellipse 70% 50% at 50% 30%, ${hexToRgba(theme, 0.2)}, transparent 70%)`,
+          backgroundColor: theme.bgBase,
+          opacity: Math.min(0.92, overlayOpacity + 0.15),
+        }}
+      />
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `radial-gradient(ellipse 70% 50% at 50% 30%, ${theme.accent}22, transparent 70%)`,
         }}
       />
     </div>

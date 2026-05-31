@@ -3,20 +3,23 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import type { Link, User } from "@/types/database";
-import { normalizePlan, isPro } from "@/lib/plans";
+import type { Link as BioLink, User } from "@/types/database";
+import { isPro } from "@/lib/plans";
+import { normalizeUserRow } from "@/lib/sanitize-profile";
 import { Header } from "@/components/layout/header";
 import { ProfileEditor } from "@/components/dashboard/profile-editor";
 import { LinksManager } from "@/components/dashboard/links-manager";
 import { SubscriptionSection } from "@/components/dashboard/subscription-section";
 import { ProFeatures } from "@/components/dashboard/pro-features";
-import { AdvancedCustomization } from "@/components/dashboard/advanced-customization";
-import { parseProfileEffects, clampVolume } from "@/lib/profile-effects";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Palette } from "lucide-react";
 import { PageWith3DBackground } from "@/components/background/background-3d";
+import { Card } from "@/components/ui/card";
 
 type DashboardClientProps = {
   user: User;
-  links: Link[];
+  links: BioLink[];
   email: string;
 };
 
@@ -27,15 +30,9 @@ export function DashboardClient({
 }: DashboardClientProps) {
   const router = useRouter();
   const supabase = createClient();
-  const [user, setUser] = useState<User>({
-    ...initialUser,
-    plan: normalizePlan(initialUser.plan),
-    effects_enabled: parseProfileEffects(initialUser.effects_enabled),
-    volume: clampVolume(initialUser.volume),
-    audio_url: initialUser.audio_url ?? null,
-    background_url: initialUser.background_url ?? null,
-    background_type: initialUser.background_type ?? null,
-  });
+  const [user, setUser] = useState<User>(
+    normalizeUserRow(initialUser as unknown as Record<string, unknown>)
+  );
   const [links, setLinks] = useState(initialLinks);
   const pro = isPro(user.plan);
 
@@ -64,8 +61,21 @@ export function DashboardClient({
         </div>
 
         <SubscriptionSection user={user} />
+        <Card className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900">Bio-page premium</h2>
+            <p className="text-sm text-slate-600 mt-1">
+              Musique, fond animé, effets visuels et thèmes
+            </p>
+          </div>
+          <Link href="/dashboard/customize">
+            <Button type="button">
+              <Palette className="h-4 w-4" />
+              Personnaliser
+            </Button>
+          </Link>
+        </Card>
         <ProfileEditor user={user} onUpdate={setUser} />
-        <AdvancedCustomization user={user} onUpdate={setUser} />
         <LinksManager user={user} links={links} onUpdate={setLinks} />
         <ProFeatures user={user} username={user.username} />
       </main>

@@ -1,16 +1,16 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { DashboardClient } from "@/components/dashboard/dashboard-client";
+import { CustomizeClient } from "@/components/dashboard/customize-client";
+import { normalizeUserRow, normalizeLinkRow } from "@/lib/sanitize-profile";
 import type { Link } from "@/types/database";
-import { normalizeUserRow } from "@/lib/sanitize-profile";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Dashboard",
+  title: "Personnaliser — BioFlow",
 };
 
-export default async function DashboardPage() {
+export default async function CustomizePage() {
   const supabase = await createClient();
 
   const {
@@ -37,12 +37,15 @@ export default async function DashboardPage() {
     .eq("user_id", authUser.id)
     .order("position", { ascending: true });
 
-  const userWithPlan = normalizeUserRow(profile as Record<string, unknown>);
+  const user = normalizeUserRow(profile as Record<string, unknown>);
+  const normalizedLinks = (links ?? []).map((l) =>
+    normalizeLinkRow(l as Record<string, unknown>)
+  ) as Link[];
 
   return (
-    <DashboardClient
-      user={userWithPlan}
-      links={(links ?? []) as Link[]}
+    <CustomizeClient
+      user={user}
+      links={normalizedLinks}
       email={authUser.email ?? ""}
     />
   );

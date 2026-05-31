@@ -5,11 +5,11 @@ import { hexToRgba } from "@/lib/utils";
 
 type EntryGateProps = {
   username: string;
-  theme: string;
+  accent: string;
   onEnter: () => void;
 };
 
-export function EntryGate({ username, theme, onEnter }: EntryGateProps) {
+export function EntryGate({ username, accent, onEnter }: EntryGateProps) {
   return (
     <motion.button
       type="button"
@@ -34,7 +34,7 @@ export function EntryGate({ username, theme, onEnter }: EntryGateProps) {
         <h2
           className="text-3xl sm:text-4xl font-bold text-white mb-3"
           style={{
-            textShadow: `0 0 40px ${hexToRgba(theme, 0.6)}`,
+            textShadow: `0 0 40px ${hexToRgba(accent, 0.6)}`,
           }}
         >
           Clique pour entrer
@@ -46,12 +46,12 @@ export function EntryGate({ username, theme, onEnter }: EntryGateProps) {
           className="mt-8 inline-block h-12 w-12 rounded-full border-2 border-white/30"
           animate={{
             boxShadow: [
-              `0 0 0 0 ${hexToRgba(theme, 0.4)}`,
-              `0 0 0 16px ${hexToRgba(theme, 0)}`,
+              `0 0 0 0 ${hexToRgba(accent, 0.4)}`,
+              `0 0 0 16px ${hexToRgba(accent, 0)}`,
             ],
           }}
           transition={{ duration: 1.5, repeat: Infinity }}
-          style={{ borderColor: theme }}
+          style={{ borderColor: accent }}
         />
       </motion.div>
     </motion.button>

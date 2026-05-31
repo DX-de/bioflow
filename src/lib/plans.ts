@@ -1,8 +1,9 @@
-import type { BackgroundType, Plan } from "@/types/database";
+import type { BackgroundType, BioThemeId, Plan } from "@/types/database";
+import { BIOFLOW_THEMES } from "@/lib/themes";
 
 export const FREE_LINK_LIMIT = 5;
 export const PRO_PRICE_MONTHLY = 4.99;
-export const DEFAULT_FREE_THEME = "#2563eb";
+export const DEFAULT_FREE_THEME: BioThemeId = "classic";
 
 export type PlanId = Plan;
 
@@ -23,13 +24,14 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
     name: "Gratuit",
     price: 0,
     priceLabel: "0€/mois",
-    description: "Parfait pour démarrer et partager vos essentiels.",
+    description: "L’essentiel pour partager vos liens.",
     features: [
-      "Jusqu'à 5 liens",
-      "1 thème simple",
-      "Page publique personnalisée",
-      "Photo et bio",
+      "5 liens maximum",
+      "Thème Classic uniquement",
+      "Page publique BioFlow",
+      "Photo, bio et badges",
       "Pas de musique ni fond vidéo",
+      "Pas d’effets avancés",
     ],
     cta: "Commencer gratuitement",
   },
@@ -38,19 +40,22 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
     name: "Pro",
     price: PRO_PRICE_MONTHLY,
     priceLabel: "4,99€/mois",
-    description: "Style bio-page premium : musique, fonds et effets.",
+    description: "Bio-page immersive complète.",
     features: [
       "Liens illimités",
+      "5 thèmes premium",
       "Musique de profil",
       "Fond image / GIF / vidéo",
-      "Effets visuels (particules, glow, glass)",
-      "Statistiques · QR Code · Domaine perso",
-      "Thèmes premium",
+      "Effets visuels & curseur",
+      "Stats vues & clics · QR · Domaine",
     ],
     highlighted: true,
     cta: "Passer en Pro",
   },
 };
+
+export const PRO_LOCKED_MESSAGE =
+  "Cette option est disponible avec BioFlow Pro.";
 
 export function isPro(plan: Plan): boolean {
   return plan === "pro";
@@ -82,10 +87,7 @@ export function canUseCustomBackground(plan: Plan): boolean {
   return isPro(plan);
 }
 
-export function canUseBackgroundType(
-  plan: Plan,
-  type: BackgroundType
-): boolean {
+export function canUseBackgroundType(plan: Plan, type: BackgroundType): boolean {
   if (!isPro(plan)) return false;
   return type === "image" || type === "gif" || type === "video";
 }
@@ -96,4 +98,21 @@ export function canUseVideoBackground(plan: Plan): boolean {
 
 export function canUseVisualEffects(plan: Plan): boolean {
   return isPro(plan);
+}
+
+export function canUseAdvancedEffects(plan: Plan): boolean {
+  return isPro(plan);
+}
+
+export function canUseThemeId(plan: Plan, themeId: BioThemeId): boolean {
+  const preset = BIOFLOW_THEMES[themeId];
+  if (!preset) return themeId === "classic";
+  if (!preset.proOnly) return true;
+  return isPro(plan);
+}
+
+export function getAvailableThemes(plan: Plan) {
+  return Object.values(BIOFLOW_THEMES).filter(
+    (t) => !t.proOnly || isPro(plan)
+  );
 }

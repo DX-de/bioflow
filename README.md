@@ -1,6 +1,8 @@
 # BioFlow
 
-Application SaaS moderne de type **link-in-bio** : centralisez vos réseaux sociaux sur une page publique personnalisable.
+Plateforme **link-in-bio premium** : bio-page sombre, moderne et ultra personnalisable (musique, fond animé, effets visuels, thèmes, stats).
+
+Identité visuelle **BioFlow** — inspirée des bio-pages gaming/luxe modernes, sans copier un concurrent.
 
 ## Stack
 
@@ -8,84 +10,35 @@ Application SaaS moderne de type **link-in-bio** : centralisez vos réseaux soci
 - **TypeScript**
 - **Tailwind CSS 4**
 - **Supabase** (Auth + PostgreSQL + Storage)
-- **Framer Motion** (animations)
+- **Framer Motion**
 - Déploiement **Vercel**
 
-## Fonctionnalités
+## Fonctionnalités principales
 
 | Module | Description |
 |--------|-------------|
-| Authentification | Inscription, connexion, déconnexion |
-| **Plans** | Gratuit (5 liens, 1 thème) / Pro (4,99€/mois, illimité + extras) |
-| Dashboard | Profil, liens, abonnement, aperçu fonctionnalités Pro |
-| Tarifs | Page `/pricing` avec cartes Gratuit & Pro |
-| Réseaux | Instagram, TikTok, Snapchat, Twitch, Discord, YouTube, Facebook, Site web |
-| Page publique | `/[username]` — photo, bio, liens avec design premium |
-| Stripe | Code préparé (`/api/stripe/checkout`, webhook) — non connecté |
-| UI | Dark mode, responsive mobile/desktop, animations |
+| Page publique | `/[username]` — écran « Clique pour entrer », profil glass, liens, vues |
+| Musique | URL audio HTTPS, titre, volume, lecteur discret (après clic uniquement) |
+| Fond | Image / GIF / vidéo MP4-WebM, flou et opacité réglables |
+| Effets | Particules, pluie, neige, étoiles, glow, traînée curseur, animations |
+| Thèmes | Classic (free), Dark Luxury, Neon Purple, Ice Blue, Red Shadow (pro) |
+| Personnalisation | `/dashboard/customize` avec **aperçu live** |
+| Plans | Free (5 liens, Classic) / Pro (illimité + premium) |
+| Stats | Compteur de vues profil, clics par lien |
+| Sécurité | Validation URLs HTTPS, types média autorisés, RLS Supabase |
 
 ## Plans
 
 | | Gratuit | Pro |
 |---|---------|-----|
-| Prix | 0€/mois | 4,99€/mois |
 | Liens | 5 max | Illimités |
-| Thème | 1 couleur simple | Palettes premium + picker |
-| Stats / QR / Domaine | — | Prévus (UI dashboard) |
-
-## Arborescence
-
-```
-BioFlow/
-├── .env.example
-├── package.json
-├── next.config.ts
-├── vercel.json
-├── supabase/
-│   ├── schema.sql          # Tables users + links, RLS, triggers
-│   ├── migrations/
-│   │   └── 001_add_plan.sql  # Migration plan (projets existants)
-│   └── storage.sql         # Bucket avatars
-├── public/
-│   └── icon.svg
-└── src/
-    ├── app/
-    │   ├── layout.tsx
-    │   ├── page.tsx                 # Landing
-    │   ├── globals.css
-    │   ├── not-found.tsx
-    │   ├── login/page.tsx
-    │   ├── signup/page.tsx
-    │   ├── dashboard/page.tsx
-    │   ├── pricing/page.tsx
-    │   ├── [username]/page.tsx      # Profil public
-    │   ├── auth/callback/route.ts
-    │   └── api/stripe/              # Checkout & webhook (stubs)
-    ├── components/
-    │   ├── auth/auth-form.tsx
-    │   ├── pricing/
-    │   ├── dashboard/
-    │   │   ├── subscription-section.tsx
-    │   │   ├── pro-features.tsx
-    │   │   └── ...
-    │   ├── layout/header.tsx
-    │   ├── profile/public-profile.tsx
-    │   ├── social-icons.tsx
-    │   └── ui/                      # Button, Input, Card...
-    ├── lib/
-    │   ├── constants.ts
-    │   ├── utils.ts
-    │   └── supabase/
-    │       ├── client.ts
-    │       ├── server.ts
-    │       └── middleware.ts
-    ├── types/database.ts
-    └── middleware.ts
-```
+| Thème | Classic | 5 thèmes |
+| Musique | — | Oui |
+| Fond vidéo / GIF | — | Oui |
+| Effets avancés | — | Oui |
+| Stats / QR / Domaine | — | UI dashboard (QR/stats Pro) |
 
 ## Installation
-
-### 1. Cloner et installer
 
 ```bash
 cd BioFlow
@@ -93,87 +46,77 @@ npm install
 cp .env.example .env.local
 ```
 
-### 2. Configurer Supabase
+### Supabase
 
 1. Créez un projet sur [supabase.com](https://supabase.com)
-2. **SQL Editor** → exécutez `supabase/schema.sql`
-3. Projet déjà créé ? → exécutez aussi `supabase/migrations/001_add_plan.sql`
-4. **SQL Editor** → exécutez `supabase/storage.sql` (ou créez le bucket `avatars` en public)
-5. **Authentication** → Settings :
-   - Désactivez « Confirm email » pour les tests locaux (optionnel)
-   - Ajoutez l’URL de redirection : `http://localhost:3000/auth/callback`
-6. Copiez **Project URL** et **anon key** dans `.env.local`
+2. **SQL Editor** → exécutez `supabase/schema.sql` (nouveau projet)
+3. Projet existant → exécutez dans l’ordre :
+   - `supabase/migrations/001_add_plan.sql`
+   - `supabase/migrations/002_profile_media_effects.sql`
+   - `supabase/migrations/003_premium_bio_platform.sql`
+4. Storage : bucket public `avatars`
+5. Auth → URL de redirection : `http://localhost:3000/auth/callback` et votre domaine Vercel
 
-### 3. Lancer en local
+### Variables d’environnement
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://VOTRE_ID.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=votre_anon_key
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
+
+### Lancer
 
 ```bash
 npm run dev
 ```
 
-Ouvrez [http://localhost:3000](http://localhost:3000).
+- Landing : `http://localhost:3000`
+- Dashboard : `/dashboard`
+- Personnalisation : `/dashboard/customize`
+- Profil public : `/votre_pseudo`
 
-## Variables d'environnement
+### Activer le plan Pro (test)
 
-| Variable | Obligatoire | Description |
-|----------|-------------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Oui | URL du projet Supabase |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Oui | Clé publique anon |
-| `NEXT_PUBLIC_SITE_URL` | Non | URL de production (ex. `https://bioflow.vercel.app`) |
-| `STRIPE_*` | Non | Paiement Pro (voir `.env.example`, désactivé par défaut) |
+```sql
+update public.users set plan = 'pro' where email = 'vous@example.com';
+```
 
-### Activer Stripe (plus tard)
+## Colonnes `users` (référence)
 
-1. Créez un produit récurrent 4,99€/mois dans le [dashboard Stripe](https://dashboard.stripe.com)
-2. Renseignez les variables dans `.env.local` et `STRIPE_ENABLED=true`
-3. Branchez `src/lib/stripe/checkout.ts` et `src/app/api/stripe/webhook/route.ts`
-4. Webhook : sur `checkout.session.completed`, mettez `users.plan = 'pro'`
+`audio_url`, `audio_title`, `volume`, `background_url`, `background_type`, `background_blur`, `background_opacity`, `effects_enabled`, `effect_type`, `cursor_effect`, `profile_animation`, `theme`, `plan`, `views`
+
+## Colonnes `links`
+
+`clicks` — incrémenté via `/api/track/click`
+
+## Arborescence clé
+
+```
+src/
+├── app/
+│   ├── [username]/page.tsx
+│   ├── dashboard/customize/page.tsx
+│   └── api/track/view|click/route.ts
+├── components/profile/
+│   ├── public-profile.tsx
+│   ├── entry-gate.tsx
+│   ├── profile-background.tsx
+│   ├── profile-audio-controls.tsx
+│   └── profile-effects-layer.tsx
+├── components/dashboard/customize-client.tsx
+├── lib/themes.ts
+├── lib/plans.ts
+└── lib/validate-media-url.ts
+```
 
 ## Déploiement Vercel
 
-Guide détaillé : **[DEPLOY.md](./DEPLOY.md)**
+Variables `NEXT_PUBLIC_SUPABASE_URL` et `NEXT_PUBLIC_SUPABASE_ANON_KEY` obligatoires.
 
 ```bash
-npm run check:env   # vérifie .env.local
 npm run build
 ```
-
-1. Poussez le repo sur GitHub
-2. Importez le projet dans [Vercel](https://vercel.com/new)
-3. Variables d'environnement : `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-4. Après le 1er deploy : `NEXT_PUBLIC_SITE_URL` + config Supabase Auth (voir DEPLOY.md)
-5. Test : `/api/health` doit retourner `{ "status": "ok" }`
-
-## Base de données
-
-### Table `users`
-
-| Colonne | Type | Description |
-|---------|------|-------------|
-| id | uuid | FK vers auth.users |
-| username | text | Unique, URL publique |
-| email | text | Email |
-| avatar | text | URL photo |
-| bio | text | Biographie |
-| theme | text | Couleur hex (#8b5cf6) |
-| plan | text | `free` ou `pro` (défaut: `free`) |
-| audio_url | text | URL HTTPS audio (Pro) |
-| background_url | text | Fond image/GIF/vidéo (Pro) |
-| background_type | text | `image` \| `gif` \| `video` |
-| effects_enabled | jsonb | Particules, glass, glow, entrance |
-| volume | numeric | Volume musique 0–1 (défaut 0.7) |
-
-Exécutez aussi `supabase/migrations/002_profile_media_effects.sql` sur les projets existants.
-
-### Table `links`
-
-| Colonne | Type | Description |
-|---------|------|-------------|
-| id | uuid | PK |
-| user_id | uuid | FK users |
-| title | text | Libellé du lien |
-| url | text | URL complète |
-| icon | text | Réseau (instagram, tiktok, …) |
-| position | int | Ordre d'affichage |
 
 ## Licence
 

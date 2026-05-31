@@ -3,9 +3,9 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
-import type { User } from "@/types/database";
-import { FREE_THEME_PRESETS, PRO_THEME_PRESETS } from "@/lib/constants";
-import { DEFAULT_FREE_THEME, isPro } from "@/lib/plans";
+import type { BioThemeId, User } from "@/types/database";
+import { DEFAULT_FREE_THEME, canUseThemeId, isPro } from "@/lib/plans";
+import { THEME_LIST } from "@/lib/themes";
 import { isValidUsername } from "@/lib/utils";
 import { Lock } from "lucide-react";
 import { UpgradeButton } from "@/components/pricing/upgrade-button";
@@ -14,7 +14,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Camera, Check, Copy, ExternalLink } from "lucide-react";
-import { getPublicProfileUrl } from "@/lib/utils";
+import { getPublicProfileUrl, cn } from "@/lib/utils";
+import { getTheme } from "@/lib/themes";
 
 type ProfileEditorProps = {
   user: User;
@@ -25,7 +26,7 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
   const supabase = createClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pro = isPro(user.plan ?? "free");
-  const themePresets = pro ? PRO_THEME_PRESETS : FREE_THEME_PRESETS;
+  const currentTheme = getTheme(user.theme);
 
   const [username, setUsername] = useState(user.username);
   const [bio, setBio] = useState(user.bio || "");
@@ -107,7 +108,10 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
         }
       }
 
-      const themeToSave = pro ? theme : DEFAULT_FREE_THEME;
+      const themeId = theme as BioThemeId;
+      const themeToSave = canUseThemeId(user.plan, themeId)
+        ? themeId
+        : DEFAULT_FREE_THEME;
 
       const { data, error: updateError } = await supabase
         .from("users")
@@ -118,7 +122,7 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
 
       if (updateError) throw updateError;
 
-      onUpdate(data);
+      onUpdate({ ...user, ...data });
       setMessage("Profil enregistré");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur lors de la sauvegarde");
@@ -135,6 +139,7 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
   }
 
   const initials = username.slice(0, 2).toUpperCase();
+  const accent = currentTheme.accent;
 
   return (
     <Card>
@@ -145,7 +150,7 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
           type="button"
           onClick={() => fileInputRef.current?.click()}
           className="relative group h-24 w-24 rounded-full overflow-hidden ring-2 ring-slate-200 focus:outline-none focus:ring-blue-500"
-          style={{ boxShadow: `0 0 24px ${theme}40` }}
+          style={{ boxShadow: `0 0 24px ${accent}40` }}
           disabled={uploading}
         >
           {avatar ? (
@@ -158,8 +163,10 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
             />
           ) : (
             <div
-              className="flex h-full w-full items-center justify-center text-2xl font-bold"
-              style={{ background: `linear-gradient(135deg, ${theme}, ${theme}99)` }}
+              className="flex h-full w-full items-center justify-center text-2xl font-bold text-white"
+              style={{
+                background: `linear-gradient(135deg, ${accent}, ${currentTheme.accentSecondary})`,
+              }}
             >
               {initials}
             </div>
@@ -218,49 +225,46 @@ export function ProfileEditor({ user, onUpdate }: ProfileEditorProps) {
 
         <div>
           <div className="flex items-center justify-between mb-3">
-            <label className="text-sm font-medium text-slate-700">
-              Couleur principale
-            </label>
+            <label className="text-sm font-medium text-slate-700">Thème</label>
             {!pro && (
               <span className="text-xs text-slate-500 flex items-center gap-1">
                 <Lock className="h-3 w-3" />
-                Thème simple (Gratuit)
+                Classic (Gratuit)
               </span>
             )}
           </div>
-          <div className="flex flex-wrap gap-3">
-            {themePresets.map((color) => (
-              <button
-                key={color}
-                type="button"
-                onClick={() => pro && setTheme(color)}
-                disabled={!pro && color !== DEFAULT_FREE_THEME}
-                className="h-10 w-10 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white disabled:opacity-40 disabled:cursor-not-allowed"
-                style={{
-                  background: color,
-                  outline: theme === color ? `2px solid white` : "none",
-                  outlineOffset: 2,
-                }}
-                aria-label={`Couleur ${color}`}
-              />
-            ))}
-            {pro && (
-              <input
-                type="color"
-                value={theme}
-                onChange={(e) => setTheme(e.target.value)}
-                className="h-10 w-10 cursor-pointer rounded-full border-0 bg-transparent"
-                title="Couleur personnalisée"
-              />
-            )}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {THEME_LIST.map((t) => {
+              const locked = !canUseThemeId(user.plan, t.id);
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  disabled={locked}
+                  onClick={() => !locked && setTheme(t.id)}
+                  className={cn(
+                    "rounded-lg border p-2 text-left text-xs transition",
+                    theme === t.id
+                      ? "border-blue-500 ring-1 ring-blue-200"
+                      : "border-slate-200",
+                    locked && "opacity-50 cursor-not-allowed"
+                  )}
+                >
+                  <div
+                    className="h-6 rounded mb-1"
+                    style={{ background: t.bgGradient }}
+                  />
+                  {t.name}
+                </button>
+              );
+            })}
           </div>
           {!pro && (
             <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
               <p className="text-xs text-slate-600 flex-1">
-                Débloquez les thèmes premium et la couleur personnalisée avec le
-                plan Pro.
+                4 thèmes premium avec BioFlow Pro.
               </p>
-              <UpgradeButton size="sm" label="Thèmes Pro" className="shrink-0" />
+              <UpgradeButton size="sm" label="Passer Pro" className="shrink-0" />
             </div>
           )}
         </div>
